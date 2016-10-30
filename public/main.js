@@ -83,6 +83,13 @@ if ($("#preferences").length > 0) {
 		if (s.length > 0) addRequirement($("#picker .priority").val(), $("#picker .filter").val(), s);
 	});
 	
+	$("#classes").find("input, select, button").on("keydown keypress", function(e) {
+		if (e.which == 13) {
+			$("#classes .primary").click();
+			e.preventDefault();
+		}
+	});
+	
 	function addRequirement(priority, type, values) {
 		var item = $("<div class=item>"), options = $("<div>"),
 				t = $("#picker .filter option[value='"+type+"']").text(),
