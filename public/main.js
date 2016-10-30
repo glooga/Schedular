@@ -188,7 +188,7 @@ if ($("#preferences").length > 0) {
 		$("input[name=filters]").val(JSON.stringify(filters));
 		$("#loader").show().outerWidth();
 		$("#loader").addClass("shown");
-		e.preventDefault();
+		//e.preventDefault();
 	});
 	
 	$("#import a").click(function() {
