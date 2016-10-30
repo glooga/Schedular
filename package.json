@@ -15,7 +15,7 @@
     "less-middleware": "^2.2.0",
     "mongoose": "^4.6.5",
     "morgan": "~1.7.0",
-    "node-redis": "^0.1.7",
+    "redis": "^2.6.2",
     "serve-favicon": "~2.3.0"
   }
 }
