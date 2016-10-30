@@ -38,3 +38,6 @@ jspm_packages
 
 # Zed configuration file
 .zedstate
+
+# LESS -> CSS output
+public/style.css
