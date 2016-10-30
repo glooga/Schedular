@@ -1,0 +1,179 @@
+<form action="">
+	<section id="intro">
+		<div class="header">
+			<h2>Welcome!</h2>
+		</div>
+		<div class="contents">
+			I need to put together a schedule for <select name="season">
+			<option>fall</option>
+			<option>spring</option>
+			</select>
+			<select name="year">
+				<option>2016</option>
+			</select>.
+		</div>
+	</section>
+	<section id="preferences">
+		<div class="header">
+			<h2>Schedule preferences</h2>
+		</div>
+		<div class="contents">
+			I want between <input type="number" value="12" name="minhours" /> and <input type="number" value="17" name="maxhours" /> hours of classes and <select name="lunchbreak">
+			<option value="yes">a lunch break</option>
+			<option value="no">no lunch break</option>
+			</select> every day between 11 am and 2 pm. Classes are fine at the following times:
+			<table class="weekview">
+				<thead>
+					<tr>
+						<td class="right">Time</td>
+						<td>Monday</td>
+						<td>Tuesday</td>
+						<td>Wednesday</td>
+						<td>Thursday</td>
+						<td>Friday</td>
+					</tr>
+				</thead>
+				<tbody></tbody>
+			</table>
+			<input type="hidden" name="unavailable" />
+		</div>
+		<div class="buttons">
+			<button type="button" class="primary">Continue</button>
+		</div>
+	</section>
+	<section id="import" class="collapsed">
+		<div class="header">
+			<h2>Import from audit</h2>
+		</div>
+		<div class="contents">
+			You can import classes from your degree audit instead of typing them in manually.
+			<ol>
+				<li>Open <a href="https://utdirect.utexas.edu/apps/degree/audits/requests/history/" target="_blank">your audit request history</a></li>
+				<li>Select an audit</li>
+				<li>Press Ctrl-A (select all)</li>
+				<li>Press Ctrl-C (copy)</li>
+				<li>Click below and press Ctrl-V (paste)</li>
+			</ol>
+			<textarea placeholder="Paste here!" rows="3"></textarea>
+		</div>
+		<div class="buttons">
+			<button type="button" class="secondary">Skip</button>
+			<button type="button" class="primary">Import</button>
+		</div>
+	</section>
+	<section id="unclassified" class="collapsed">
+		<div class="header">
+			<h2>Unclassified requirements</h2>
+		</div>
+		<div class="contents">
+			<div class="alert">Some of your requirements were unable to be added automatically!</div>
+			Don't worry, you can add these requirements manually below.
+			<ul></ul>
+		</div>
+		<div class="buttons">
+			<button type="button" class="primary">Okay</button>
+		</div>
+	</section>
+	<section id="classes" class="collapsed">
+		<div class="header">
+			<h2>Add filter</h2>
+		</div>
+		<div class="contents">
+			Any other wishes for your schedule? Don't forget to indicate any reserved classes (for example by your pod, FIG, or other program) as "I have to have."
+			<div id="picker">
+				<select class="priority">
+					<option value="regular">It would be nice to have a class</option>
+					<option value="high">I have to have a class</option>
+				</select>
+				<select class="filter">
+					<option value="course identifier">with course number</option>
+					<option value="unique">with unique number</option>
+					<option value="field of study">in the field of</option>
+					<option value="instructor">with instructor</option>
+					<option value="flags">fulfilling the flag</option>
+					<option value="core">fulfilling core requirement</option>
+					<option value="level">at the level of</option>
+					<option value="hours">with a certain number of hours</option>
+				</select>
+				<div class="options">
+					<div class="courseidentifier unique instructor orable">
+						<div class="value">
+							<input type="text" placeholder="type here..." />
+						</div>
+					</div>
+					<div class="fieldofstudy orable">
+						<div class="value">
+							<select>
+								<option value="" selected disabled>select a field of study</option>
+								<option value="ACC">ACC</option>
+							</select>
+						</div>
+					</div>
+					<div class="flags">
+						<select>
+							<option value="" selected disabled>select a flag</option>
+							<option value="Wr">Writing</option>
+							<option value="QR">Quantitative reasoning</option>
+							<option value="GC">Global cultures</option>
+							<option value="CD">Cultural diversity</option>
+							<option value="EL">Ethics and leadership</option>
+							<option value="II">Independent inquiry</option>
+						</select>
+					</div>
+					<div class="core">
+						<select>
+							<option value="" selected disabled>select a requirement</option>
+							<option value="010">Communication</option>
+							<option value="020">Mathematics</option>
+							<option value="030">Natural Sciences</option>
+							<option value="040">Humanities</option>
+							<option value="050">Visual and Performing Arts</option>
+							<option value="060">History</option>
+							<option value="070">Government</option>
+							<option value="080">Social and Behavioral Science</option>
+							<option value="090">Institutionally Designated Option</option>
+							<option value="093">Natural Sciences</option>
+						</select>
+					</div>
+					<div class="level">
+						<select>
+							<option value="" selected disabled>select a division</option>
+							<option value="lower">lower-division</option>
+							<option value="upper">upper-division</option>
+							<option value="graduate">graduate-division</option>
+						</select>
+					</div>
+					<div class="hours">
+						<input type="number" placeholder="3" />
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="buttons">
+			<button type="button" class="primary">Add filter</button>
+		</div>
+	</section>
+	<section id="chosen" class="collapsed">
+		<div class="header">
+			<h2>Selected filters</h2>
+		</div>
+		<div class="contents">
+			<div class="empty">No filters added. Add them above.</div>
+		</div>
+		<div class="buttons">
+			<button type="submit" class="primary">Search</button>
+		</div>
+		<input type="hidden" name="filters" />
+	</section>
+</form>
+<div id="loader">
+	<div class="spinner">
+		<div class="spinny one"></div>
+		<div class="spinny two"></div>
+		<div class="spinny three"></div>
+	</div>
+	<div class="text">
+		<h2>Processing...</h2>
+		Looking through 47382 courses to find the best schedule for you!
+	</div>
+</div>

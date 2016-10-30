@@ -1,0 +1,392 @@
+@pad: 5px;
+.border-radius {
+	border-radius: 3px;
+}
+.fullcover {
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+}
+@bordercol: rgba(0,0,0,0.3);
+
+body {
+	overflow-y: scroll;
+}
+
+body, input, select, button {
+	margin: 0;
+	font-family: sans-serif;
+	font-size: 1em;
+}
+
+header, main, footer {
+	margin: @pad auto;
+	padding: 0 @pad;
+	max-width: 600px;
+}
+
+header {
+	text-align: center;
+}
+
+h2, h3 {
+	margin: 0;
+	font-size: 1.2em;
+}
+
+section {
+	border: 1px solid @bordercol;
+	margin-bottom: @pad;
+	.border-radius;
+	position: relative;
+	overflow: hidden;
+	> div {
+		padding: @pad;
+	}
+	.overlay {
+		.fullcover;
+		background: rgba(255,255,255,0.6);
+		b {
+			position: absolute;
+			top: 50%;
+			left: 50%;
+			transform: translate(-50%, -50%);
+			opacity: 0.5;
+			font-size: 2em;
+			text-transform: uppercase;
+		}
+	}
+	.buttons {
+		border-top: 1px solid @bordercol;
+		text-align: right;
+		button {
+			padding: @pad @pad*2;
+			border: 1px solid @bordercol;
+			.border-radius;
+			font-size: 1em;
+		}
+		.primary {
+			background: blue;
+			color: white;
+		}
+		.secondary {
+			background: transparent;
+			color: #777;
+		}
+		.back {
+			float: left;
+		}
+	}
+	&.collapsed {
+		> div {
+			display: none;
+		}
+		.header {
+			display: block;
+		}
+	}
+}
+
+#preferences {
+	.contents input {
+		width: 3em;
+	}
+}
+
+.weekview {
+	width: 100%;
+	text-align: center;
+	margin-top: @pad;
+	thead {
+		font-weight: bold;
+	}
+	&, tr, td {
+		padding: 0;
+		border-spacing: 0;
+	}
+	td {
+		width: 100/5%;
+		position: relative;
+	}
+	.right {
+		width: 0;
+		text-align: right;
+		padding: 0 @pad;
+	}
+	input {
+		opacity: 0;
+	}
+	label {
+		display: block;
+		.fullcover;
+		background: red;
+		opacity: 0.5;
+		cursor: pointer;
+		&:before, &:after {
+			content: "";
+			display: block;
+			position: absolute;
+			left: 50%;
+			top: 50%;
+			transform: translate(-50%, -50%) rotate(-45deg);
+			border-left: 2px solid white;
+			height: 12px;
+			width: 0;
+		}
+		&:after {
+			transform: translate(-50%, -50%) rotate(45deg);
+		}
+	}
+	input:focus + label {
+		opacity: 1;
+	}
+	input:checked + label {
+		background: #ddd;
+		&:before {
+			display: none;
+		}
+		&:after {
+			border: 2px solid black;
+			width: 4px;
+			height: 10px;
+			border-width: 0 2px 2px 0;
+		}
+	}
+}
+
+#import {
+	textarea {
+		width: 100%;
+		box-sizing: border-box;
+		display: block;
+	}
+}
+
+#unclassified, #results .expanded {
+	.alert {
+		background: rgba(255,0,0,0.8);
+		color: white;
+		padding: @pad;
+		margin: 0 -@pad @pad -@pad;
+	}
+}
+
+#classes {
+	#picker {
+		margin-top: @pad;
+		select, input, button {
+			display: block;
+			width: 100%;
+			box-sizing: border-box;
+			padding: @pad;
+			margin-bottom: @pad;
+		}
+		.options {
+			select, input {
+				margin-bottom: 0;
+			}
+			.orable .value {
+				margin-top: -1px;
+				margin-right: 2.4em;
+				&:before {
+					content: "or";
+					position: absolute;
+					padding: @pad;
+					right: @pad;
+					text-transform: uppercase;
+					opacity: 0.8;
+				}
+				&:last-child {
+					margin-right: 0;
+					&:before {
+						display: none;
+					}
+				}
+			}
+		}
+		button {
+			background: blue;
+			color: white;
+		}
+	}
+}
+
+#chosen {
+	border: 1px solid @bordercol;
+	.border-radius;
+	.contents {
+		padding: 0;
+		> div {
+			border-bottom: 1px solid @bordercol;
+			padding: @pad;
+			&.empty {
+				text-align: center;
+				padding: 1em;
+				color: rgba(0,0,0,0.5);
+			}
+			> div {
+				text-align: right;
+				float: right;
+				a {
+					text-decoration: none;
+					font-size: 0.8em;
+				}
+			}
+			&:after {
+				display: table;
+				content: "";
+				clear: both;
+			}
+		}
+	}
+	.buttons {
+		border-top: none;
+	}
+}
+
+footer {
+	text-align: center;
+	padding: @pad 0;
+	font-size: 0.9em;
+	opacity: 0.7;
+}
+
+#loader {
+	.fullcover;
+	position: fixed;
+	background: rgba(0,0,0,0.75);
+	color: white;
+	text-align: center;
+	z-index: 2;
+	display: none;
+	opacity: 0;
+	transition: opacity 0.6s ease-in-out;
+	&.shown {
+		opacity: 1;
+	}
+	div {
+		position: absolute;
+		left: 50%;
+		top: 50%;
+	}
+	.spinner {
+		width: 120px;
+		height: 120px;
+		margin: -120px -60px;
+		animation: spin 6s linear infinite;
+		@keyframes spin {
+			from { transform: rotateZ(360deg) }
+			to { transform: rotateZ(0deg) }
+		}
+	}
+	.spinny {
+		border-top: 4px solid;
+		width: 120px;
+		height: 120px;
+		border-radius: 999px;
+		margin: -60px;
+		animation: spin-one 2s linear infinite;
+		@angle: 60deg;
+		@keyframes spin-one {
+			from { transform: rotateY(@angle) rotateZ(0deg) }
+			to { transform: rotateY(@angle) rotateZ(360deg) }
+		}
+		&.two {
+			animation-name: spin-two;
+		}
+		@keyframes spin-two {
+			from { transform: rotateZ(120deg) rotateY(@angle) rotateZ(0deg) }
+			to { transform: rotateZ(120deg) rotateY(@angle) rotateZ(360deg) }
+		}
+		&.three {
+			animation-name: spin-three;
+		}
+		@keyframes spin-three {
+			from { transform: rotateZ(240deg) rotateY(@angle) rotateZ(0deg) }
+			to { transform: rotateZ(240deg) rotateY(@angle) rotateZ(360deg) }
+		}
+	}
+	.text {
+		margin-top: 60px;
+		transform: translate(-50%, -50%);
+		width: 100%;
+		max-width: 260px;
+		h2 {
+			margin-bottom: @pad;
+		}
+	}
+}
+.timetable {
+	width: 100px;
+	height: 80px;
+	position: relative;
+	> div {
+		width: 20%;
+		background: black;
+		position: absolute;
+	}
+	.mon { left: 0 }
+	.tue { left: 20% }
+	.wed { left: 40% }
+	.thu { left: 60% }
+	.fri { left: 80% }
+}
+
+#results {
+	.result {
+		display: block;
+		height: 80px;
+		position: relative;
+		color: inherit;
+		.information {
+			position: absolute;
+			left: 110px;
+			top: 50%;
+			transform: translateY(-50%);
+		}
+	}
+	.expanded {
+		padding: @pad;
+		border: 1px solid @bordercol;
+		.border-radius;
+		position: relative;
+		&.template {
+			display: none;
+		}
+		&:before, &:after {
+			content: "";
+			display: block;
+			position: absolute;
+			bottom: 100%;
+			left: @pad*4;
+			border: 12px solid transparent;
+			border-bottom-color: @bordercol;
+			width: 0;
+			height: 0;
+		}
+		&:after {
+			margin-bottom: -1px;
+			border-bottom-color: white;
+		}
+		.information {
+			margin-top: @pad;
+			.schedulelink {
+				display: block;
+				text-align: center;
+				width: 100%;
+				padding: @pad;
+				margin: 0 -@pad;
+				border: 1px solid @bordercol;
+				border-width: 1px 0;
+			}
+			small {
+				fons-size: 0.6em;
+				text-align: center;
+				display: block;
+				padding: @pad;
+			}
+		}
+	}
+}
