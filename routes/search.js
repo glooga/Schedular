@@ -286,8 +286,36 @@ module.exports = function(app) {
     });
 
     app.get('/search/:hash', function(req, res, next) {
-        res.render('index', {
-            title: 'Express'
-        });
+    	client.get(stringifiedReqs, function(err, reply) {
+			if (err || reply == null) {
+				res.redirect('/');
+			} else {
+				var combinations = JSON.parse(reply),
+					results = [];
+				for (var i = 0; i < combinations.length; i++) {
+					var result = {},
+						classnames = [];
+					result.timeblocks = [];
+					for (var j = 0; j < combinations[i].length; j++) {
+						for (var k = 0; k < combinations[i][j].times.length; k++) {
+							result.timeblocks.push({
+								day: combinations[i][j].day,
+								//color: combinations[i][j].fieldofstudy,
+								start: (combinations[i][j].times[k].start-60*6)/(60*(20-6))*100
+								duration: ((combinations[i][j].times[k].end-combinations[i][j].times[k].start)-60*6)/(60*(20-6))*100
+							});
+							classnames.push(combinations[i][j].coursenumber);
+						}
+						classnames.push(combinations[i][j].coursenumber);
+					}
+					result.hash = ""; // [TODO]: get the actual hash
+					result.classes = classnames.join(", ");
+					results.push(result);
+				}
+				res.render('index', {
+					results: results
+				});
+			}
+		});
     });
 }
