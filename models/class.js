@@ -11,8 +11,8 @@ var classSchema = mongoose.Schema({
 	flags: [{type: String, required: false, unique: false}],
 	core: {type: String,  unique: false, required: false},
 	//description: {type: String, unique: false, required: false},
-	//year: {type: Number, unique: false, required: true},
-	//season: {type: String, unique: false, required: true},
+	year: {type: Number, unique: false, required: true},
+	season: {type: String, unique: false, required: true},
 	times: [{
 		day: {type: String, unique: false, required: false},
 		start: {type: Number, unique: false, required: false},

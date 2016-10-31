@@ -7,6 +7,10 @@ Class.remove({}, function(error) { console.log(error); });
 
 function saveFile(i) {
 	var jsa = JSON.parse(fs.readFileSync('./out/classes' + i + '.json', 'utf8'));
+	for(var j = 0; j < jsa.length; j++) {
+		(jsa[j])["year"] = 2017;
+		(jsa[j])["season"] = "spring";
+	}
 	Class.create(jsa, function(err, objs) {
 		if(err) {
 			console.error(err);

@@ -17,6 +17,8 @@ function leftPad(str, len) {
 
 function meetsRequirement(requirement, clss) {
     var meets = 0;
+	console.log("requirements: ");
+	console.log(requirement);
     for (var i = 0; i < requirement.value.length; i++) {
         switch (requirement.type) {
             case "field of study":
@@ -65,7 +67,9 @@ module.exports = function(app) {
         var min = req.body.minhours;
         var lunchbreak = (req.body.lunchbreak === "true");
         var unavailable = JSON.parse(req.body.unavailable);
-        var reqs = JSON.parse(req.body.requirements);
+        var reqs = JSON.parse(req.body.filters);
+		console.log("reqs: ");
+		console.log(reqs);
         unavailable.sort(function(a, b) {
             if (a.day > b.day) return 1;
             else if (a.day < b.day) return -1;
@@ -101,13 +105,20 @@ module.exports = function(app) {
         });
 
         var requirementDivider = 0;
-        while (reqs[requirementDivider].priority != "regular") {
-            requirementDivider++;
-        }
-        var hardR = reqs.slice(0, requirementDivider);
-        var softR = reqs.slice(requirementDivider);
-
-        function tryClasses(hardR, softR) {
+		var hardR;
+		var softR;
+		if(reqs[reqs.length-1].priority == "high") {
+			hardR = reqs.slice();
+			softR = [];
+		}
+		else {
+	        while (reqs[requirementDivider].priority != "regular") {
+	            requirementDivider++;
+	        }
+	        hardR = reqs.slice(0, requirementDivider);
+	        softR = reqs.slice(requirementDivider);
+		}
+        function tryClasses(hardR, softR, firstLayer) {
             if (hardR == []) {
                 var hours = 0; // find the total number of hours
                 for (var i = 0; i < classStack.length; i++) {
@@ -122,7 +133,7 @@ module.exports = function(app) {
                         currentSchedule = workingCombinations[i];
                         if (currentSchedule.length == classStack.length) {
                             for (var j = 0; j < classStack.length; j++) {
-                                matching &= (classStack[j].uniquenumber === currentSchedule.uniquenumber);
+                                matching &= (classStack[j].uniquenumber == currentSchedule.uniquenumber);
                             }
                         }
                     }
@@ -173,15 +184,17 @@ module.exports = function(app) {
                             var currentClass = classStack[i];
                             hash += "+" + leftPad(currentClass.uniquenumber, 5);
                         }
+						shasum = crypto.createHash('sha1');
                         shasum.update("SCHEDULER:SCHEDULE:" + hash.substring(1)); // use a hash function on the hash
                         client.set(shasum.digest('hex'), JSON.stringify(classStack)); // add it to redis
                         client.expire(hash, 12 * 3600);
+						console.log("Thanks for the help");
                         workingCombinations.push(classStack); // push it to workingCombinations
                     }
                     return 0;
                 } else if (hours > max) {
                     return 0;
-                } else if (softR == []) {
+                } else if (softR.length==0) {
                     return 0;
                 }
             }
@@ -189,26 +202,29 @@ module.exports = function(app) {
             Class.find({year: req.body.year, season: req.body.season}).exec()
                 .then(function(allClasses) {
                     var potentialClasses = [];
+					var allReqs = hardR.slice().concat(softR.slice());
                     for (var i = 0; i < allClasses.length; i++) {
                         var currClass = allClasses[i];
-                        var allReqs = hardR + softR;
-                        for (var a = 0; a < allReqs; a++) {
+                        for (var a = 0; a < allReqs.length; a++) {
                             if (meetsRequirement(allReqs[a], currClass)) {
                                 potentialClasses.push(currClass);
+								a = allReqs.length;
                             }
                         }
                     }
                     return potentialClasses;
                 })
                 .then(function(potentialClasses) {
+					console.log("Potential Classes: ")
+					console.log(potentialClasses);
                     for (var i = 0; i < potentialClasses.length; i++) {
                         var poten = potentialClasses[i];
                         var noConflicts = 1;
                         var hours = parseInt(poten.coursenumber.charAt(poten.fieldofstudy.length));
-                        for (var j = 0; j < classStack.length; j++) {
+                        for (var j = 0; j < classStack.length; j++) {											// going through every class in the stack
                             var thisClass = classStack[j];
-                            hours += parseInt(thisClass.coursenumber.charAt(thisClass.fieldofstudy.length));
-                            for (var k = 0; k < thisClass.times.length; k++) {
+                            hours += parseInt(thisClass.coursenumber.charAt(thisClass.fieldofstudy.length));	// adding on the houts
+                            for (var k = 0; k < thisClass.times.length; k++) {									// checking if potential class conflicts with stack
                                 for (var l = 0; l < poten.times.length; l++) {
                                     var potenTime = poten.times[l];
                                     var thisTime = thisClass.times[k];
@@ -218,7 +234,7 @@ module.exports = function(app) {
                                     }
                                 }
                             }
-                            for (var k = 0; k < unavailable.length; k++) {
+                            for (var k = 0; k < unavailable.length; k++) {										// ^^ ^^ with restricted times
                                 for (var l = 0; l < poten.times.length; l++) {
                                     var potenTime = poten.times[l];
                                     var thisTime = unavailable[k];
@@ -247,41 +263,39 @@ module.exports = function(app) {
                                 }
                             }
 
-                            if (hardRClone.length != hardR.length || (hardR == [] && softRClone.length != softR.length)) {
+                            if (hardRClone.length != hardR.length || (hardR.length == 0 && softRClone.length != softR.length)) {
                                 classStack.push(poten.toObject());
                                 var hrs = 0;
                                 for (var j = 0; j < classStack.length; j++) {
                                     hrs += parseInt(classStack[j].coursenumber.charAt(classStack[j].fieldofstudy.length));
                                 }
                                 if (hrs <= max) {
+									console.log("Moving down");
                                     tryClasses(hardRClone, softRClone);
                                 }
                                 classStack.pop();
                             }
                         }
                     }
+					if(firstLayer) {
+						var stringifiedReqs = JSON.stringify(max) + "+" + JSON.stringify(min) + "+" + JSON.stringify(lunchbreak) + "+" +
+							JSON.stringify(unavailable) + "+" + JSON.stringify(reqs);
+						shasum = crypto.createHash('sha1');
+						shasum.update("SCHEDULER:SEARCH:" + stringifiedReqs); // use a hash function on the hash
+						stringifiedReqs = shasum.digest('hex');
+						client.set(stringifiedReqs, JSON.stringify(workingCombinations)); // add it to redis
+						client.expire(stringifiedReqs, 12 * 3600);
+						console.log("Working Combinations: ");
+						console.log(workingCombinations);
+						res.redirect('/search/' + stringifiedReqs);
+					}
                 })
                 .catch(function(err) {
                     console.log(err);
                 });
         }
 
-        var stringifiedReqs = JSON.stringify(max) + "+" + JSON.stringify(min) + "+" + JSON.stringify(lunchbreak) + "+" +
-            JSON.stringify(unavailable) + "+" + JSON.stringify(reqs);
-        shasum.update("SCHEDULER:SEARCH:" + stringifiedReqs); // use a hash function on the hash
-        stringifiedReqs = shasum.digest('hex');
-
-        client.get(stringifiedReqs, function(err, reply) {
-            if (err) {
-                console.log(err);
-            }
-            if (reply == null) {
-                tryClasses(requirements);
-                client.set(stringifiedReqs, JSON.stringify(workingCombinations)); // add it to redis
-                client.expire(hash, 12 * 3600);
-            }
-            res.redirect('/search/' + stringifiedReqs);
-        });
+        tryClasses(hardR, softR, true);
 
     });
 
