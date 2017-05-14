@@ -5,10 +5,10 @@ var logger = require('morgan');
 var lessMiddleware = require('less-middleware');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
-var mongoose = require('mongoose');
+//var mongoose = require('mongoose');
 
-mongoose.connect('mongodb://localhost/Schedular');
-mongoose.Promise = require('bluebird');
+//mongoose.connect('mongodb://localhost/Schedular');
+//mongoose.Promise = require('bluebird');
 
 var app = express();
 

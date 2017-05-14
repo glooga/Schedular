@@ -35,12 +35,12 @@ if ($("#preferences").length > 0) {
 	$("#preferences .primary").click(function() {
 		finishSection("preferences");
 	});
-	
+
 	function finishSection(name) {
 		$("#"+name).addClass("disabled").append($("<div>").addClass("overlay").html("<b>completed</b>"));
 		$("#"+name).next("section").removeClass("collapsed");
 	}
-	
+
 	$(".weekview").each(function() {
 		var actual = $(this).find("tbody");
 		for (var i = 6; i <= 20; i++) {
@@ -52,15 +52,28 @@ if ($("#preferences").length > 0) {
 			actual.append(row);
 		}
 	});
-	
+
 	$("#import button").click(function() {
 		var parsed = processAudit($("#import textarea").val());
 		for (var i = 0; i < parsed.unclassified.length; i++) {
 			var u = parsed.unclassified[i];
 			$("#unclassified ul").append($("<li>").text(u));
 		}
+		var numberToCore = {
+			"010": "C1",
+			"020": "MA",
+			"030": "N1",
+			"040": "HU",
+			"050": "VP",
+			"060": "HI",
+			"070": "GO",
+			"080": "SB",
+			"090": "ID",
+			"093": "N2"
+		}
 		for (var i = 0; i < parsed.requirements.length; i++) {
 			var r = parsed.requirements[i];
+			if (r.type == "core") r.value = numberToCore[r.value];
 			addRequirement("regular", r.type, [r.value]);
 		}
 		finishSection("import");
@@ -69,12 +82,12 @@ if ($("#preferences").length > 0) {
 			$("#classes, #chosen").removeClass("collapsed");
 		}
 	});
-	
+
 	$("#unclassified .primary").click(function() {
 		$("#unclassified .buttons").hide();
 		$("#classes, #chosen").removeClass("collapsed");
 	});
-	
+
 	$("#classes .primary").click(function() {
 		var selection = $("#picker .options > div:visible").find("input, select"), s = [];
 		selection.each(function() {
@@ -82,14 +95,14 @@ if ($("#preferences").length > 0) {
 		});
 		if (s.length > 0) addRequirement($("#picker .priority").val(), $("#picker .filter").val(), s);
 	});
-	
+
 	$("#classes").find("input, select, button").on("keydown keypress", function(e) {
 		if (e.which == 13) {
 			$("#classes .primary").click();
 			e.preventDefault();
 		}
 	});
-	
+
 	function addRequirement(priority, type, values) {
 		var item = $("<div class=item>"), options = $("<div>"),
 				t = $("#picker .filter option[value='"+type+"']").text(),
@@ -129,14 +142,14 @@ if ($("#preferences").length > 0) {
 			$(this).find("input, select").val("");
 		});
 	}
-	
+
 	$("#picker .filter").change(function() {
 		$("#picker .options > div").hide();
 		$("#picker .options ."+$(this).val().replace(/\s/g, "")).show();
 	}).change();
-	
+
 	$("#picker .orable").find("select, input").on("keyup keydown keypress mouseup click", addInputIfNeeded);
-	
+
 	function addInputIfNeeded() {
 		var orable = $(this).parents(".orable");
 		if (orable.children(".value").length > 1) {
@@ -155,7 +168,7 @@ if ($("#preferences").length > 0) {
 			orable.children(".value").last().find("input, select").val("").on("keyup keydown keypress mouseup click", addInputIfNeeded);
 		}
 	}
-	
+
 	$("main > form").submit(function(e) {
 		var unavailable = [],
 				filters = [],
@@ -190,7 +203,7 @@ if ($("#preferences").length > 0) {
 		$("#loader").addClass("shown");
 		//e.preventDefault();
 	});
-	
+
 	$("#import a").click(function() {
 		setTimeout(function() {
 			if (!$("#import").hasClass("disabled")) {

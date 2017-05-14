@@ -41,3 +41,6 @@ jspm_packages
 
 # LESS -> CSS output
 public/style.css
+
+# Datafile
+classes0.json

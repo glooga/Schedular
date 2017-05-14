@@ -1,12 +1,12 @@
 <p>
-	Found <strong>43</strong> possible schedules! Sorting by
+	Found <strong>{{count}}</strong> possible schedules! Sorting by
 	<select id="sort">
 		<option value="">requirements filled</option>
 		<option value="">earlier first</option>
 		<option value="">later first</option>
 	</select>:
 </p>
-{{#if title}}
+{{#if results}}
 <div id="results">
 	{{#each results}}
 	<a class="result" href="/schedule/{{hash}}" id="schedule-{{hash}}">
